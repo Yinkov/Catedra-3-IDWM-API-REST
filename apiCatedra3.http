@@ -1,0 +1,6 @@
+@apiCatedra3_HostAddress = http://localhost:5231
+
+GET {{apiCatedra3_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
