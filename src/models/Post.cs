@@ -8,8 +8,9 @@ namespace apiCatedra3.src.models
     public class Post
     {
         public int Id { get; set; }
-        private string Title {get; set;} = string.Empty;
-        private DateTime publicationDate {get; set;}
-        private string linkImage {get; set;} = string.Empty;
+        public string Title {get; set;} = string.Empty;
+        public DateTime publicationDate {get; set;}
+        public string linkImage {get; set;} = string.Empty;
+         
     }
 }

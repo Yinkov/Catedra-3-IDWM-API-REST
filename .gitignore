@@ -1,0 +1,16 @@
+# excluye carpetas bin y obj
+/bin/
+/obj/
+
+# IDEs
+.vscode/
+.idea/
+
+
+
+#Db
+*.sqlite
+*.db 
+
+
+.env
