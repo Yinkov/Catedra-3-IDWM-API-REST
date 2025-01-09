@@ -1,6 +1,8 @@
 using System.Text;
 using apiCatedra3.src.Data;
+using apiCatedra3.src.interfaces;
 using apiCatedra3.src.models;
+using apiCatedra3.src.Services;
 using DotNetEnv;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -16,6 +18,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAuthorization();
+builder.Services.AddScoped<ITokenService, TokenService>();
 
 
 
