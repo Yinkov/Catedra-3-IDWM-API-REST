@@ -1,19 +1,32 @@
 using System.Text;
 using apiCatedra3.src.Data;
+using apiCatedra3.src.Helpers;
 using apiCatedra3.src.interfaces;
 using apiCatedra3.src.models;
 using apiCatedra3.src.Services;
+using CloudinaryDotNet;
 using DotNetEnv;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
 Env.Load();
 
+var CloudinarySettings = builder.Configuration.GetSection("ClaudinarySettings").Get<ClaudinarySettings>();
+var CloudinaryAccount = new Account(
+    CloudinarySettings!.Cloudname,
+    CloudinarySettings.Apikey,
+    CloudinarySettings.ApiSecret
+);
+var cloudinary = new Cloudinary(CloudinaryAccount);
+
+
+
+builder.Services.AddSingleton(cloudinary);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -79,6 +92,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseDeveloperExceptionPage();
 }
 
 app.UseHttpsRedirection();
