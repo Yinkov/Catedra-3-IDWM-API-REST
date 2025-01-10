@@ -3,6 +3,7 @@ using apiCatedra3.src.Data;
 using apiCatedra3.src.Helpers;
 using apiCatedra3.src.interfaces;
 using apiCatedra3.src.models;
+using apiCatedra3.src.Repositories;
 using apiCatedra3.src.Services;
 using CloudinaryDotNet;
 using DotNetEnv;
@@ -32,6 +33,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAuthorization();
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IPostRepository, PostRepository>();
 
 
 
@@ -82,6 +84,42 @@ builder.Services.AddAuthentication(opt => {
 
 
 
+builder.Services.AddSwaggerGen(option =>
+{
+    option.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+    {
+        Title = "API Cátedra 3",
+        Version = "v1",
+        Description = "API para gestionar publicaciones y usuarios."
+    });
+
+    // Configurar el esquema de seguridad JWT
+    option.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+        Description = "Ingresa el token JWT en el formato: Bearer {tu_token}"
+    });
+
+    // Requerir el esquema de seguridad en las operaciones
+    option.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+    {
+        {
+            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+            {
+                Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                {
+                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
+});
 
 
 
@@ -91,7 +129,10 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "API Cátedra 3 v1");
+    });
     app.UseDeveloperExceptionPage();
 }
 
