@@ -82,7 +82,17 @@ builder.Services.AddAuthentication(opt => {
     };
 });
 
-
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSpecificOrigin", policy =>
+    {
+        policy.WithOrigins("http://localhost:4200") //aaaaaaaaaaaaaaaaaaaaaaaa Cambias
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .WithExposedHeaders("Authorization") 
+            .SetPreflightMaxAge(TimeSpan.FromMinutes(10)); 
+    });
+});
 
 builder.Services.AddSwaggerGen(option =>
 {
@@ -137,11 +147,37 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors("AllowSpecificOrigin");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
+using var scope = app.Services.CreateScope();
+var services = scope.ServiceProvider;
 
+try
+{
+    // Obtener el contexto de la base de datos
+    var context = services.GetRequiredService<AplicationDBContext>();
+
+    // Validar si hay migraciones pendientes
+    var pendingMigrations = await context.Database.GetPendingMigrationsAsync();
+    if (pendingMigrations.Any())
+    {
+        await context.Database.MigrateAsync();
+        Console.WriteLine("Migraciones aplicadas.");
+    }
+    else
+    {
+        Console.WriteLine("No hay migraciones pendientes.");
+    }
+
+}
+catch (Exception ex)
+{
+    var logger = services.GetRequiredService<ILogger<Program>>();
+    logger.LogError(ex, "Error durante la migración.");
+}
 
 app.Run();
 
